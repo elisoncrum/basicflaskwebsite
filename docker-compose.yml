@@ -1,0 +1,29 @@
+services:
+    app:
+        image: python:slim
+        ports:
+            - 4000:4000
+        volumes:
+            - ./src:/usr/src
+        working_dir: /usr/src
+        environment:
+            - HOOK_MODE
+        depends_on:
+            - db
+        entrypoint: ./entrypoint.sh
+    db:
+        image: mysql
+        ports:
+            - 3306:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=testing
+            - MYSQL_DATABASE=testing
+        # https://stackoverflow.com/questions/55559386/how-to-fix-mbind-operation-not-permitted-in-mysql-error-log
+        cap_add:
+            - SYS_NICE  # CAP_SYS_NICE
+    admin:
+        image: phpmyadmin
+        ports:
+            - 4080:80
+        environment:
+            - PMA_HOST=db
